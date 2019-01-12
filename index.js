@@ -25,7 +25,7 @@ const transformMiddleware = (action) => {
 };
 
 module.exports = (app) => {
-  const methods = ['get', 'post', 'put'];
+  const methods = ['use', 'all', 'get', 'post', 'put', 'delete'];
   const handler = app;
   
   methods.forEach(method => {
