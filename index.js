@@ -34,8 +34,6 @@ module.exports = (app) => {
     handler[method] = function (...args) {
       const func = origFunction.bind(this);
       const [path, ...actions] = args;
-
-      
       const [action, ...middlewares] = actions.reverse();
 
       if (action instanceof Function) {
