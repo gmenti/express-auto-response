@@ -32,16 +32,9 @@ module.exports = (app) => {
     const origFunction = handler[method];
 
     handler[method] = function (...args) {
-      if (!args.length) {
-        return;
-      }
-      
       const func = origFunction.bind(this);
       const [path, ...actions] = args;
 
-      if (actions.length === 0 && path instanceof Function) {
-        return func(transformMiddleware(path));
-      }
       
       const [action, ...middlewares] = actions.reverse();
 
@@ -55,8 +48,8 @@ module.exports = (app) => {
           transformHandler(action),
         ]);
       }
-    
-      return func(args);
+
+      return func(...args);
     };
   });
 
