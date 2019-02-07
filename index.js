@@ -25,26 +25,29 @@ const transformMiddleware = (action) => {
 };
 
 module.exports = (app) => {
-  const methods = ['use', 'all', 'get', 'post', 'put', 'delete'];
+  const methods = ['use', 'all', 'get', 'post', 'patch', 'put', 'delete'];
+
   const handler = app;
-  
-  methods.forEach(method => {
+  handler.error = handler.use;
+
+  methods.forEach((method) => {
     const origFunction = handler[method];
 
-    handler[method] = function (...args) {
+    handler[method] = function(...args) {
       const func = origFunction.bind(this);
       const [path, ...actions] = args;
       const [action, ...middlewares] = actions.reverse();
+
+      if (path instanceof Function) {
+        return func(transformMiddleware(path));
+      }
 
       if (action instanceof Function) {
         if (!middlewares.length) {
           return func(path, transformHandler(action));
         }
 
-        return func(path, ...[
-          ...middlewares.map(transformMiddleware),
-          transformHandler(action),
-        ]);
+        return func(path, ...[...middlewares.map(transformMiddleware), transformHandler(action)]);
       }
 
       return func(...args);
